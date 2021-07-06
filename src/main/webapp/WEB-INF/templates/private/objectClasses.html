@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout.html}">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Insert title here</title>
+
+</head>
+<body>
+<div layout:fragment="content" class="row">
+
+    <div class="container-fluid h-100">
+        <div class="row justify-content-center h-100">
+            <div class="col-4 hidden-md-down overflow-auto" id="yellow">
+                <div id="object-class-tree" class="jstree jstree-1 jstree-default jstree-default-small"></div>
+            </div>
+            <div class="col-10 col-sm-10 col-md-10 col-lg-8 col-xl-8">
+                <table id="property-table" class="table table-striped table-hover table-bordered table-sm"
+                       style="width: 100%">
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="fragments/fragments :: standard_modal">Модальное окно редактирования</div>
+
+    <script type="text/javascript" th:inline="javascript">
+        $(function () {
+            $('#object-class-tree')
+                .on("changed.jstree", function (e, data) {
+                    if (data.selected.length === 1) {
+                        let propertyURL = /*[[@{/private/objectClasses/}]]*/"";
+                        propertyTable.ajax.url(propertyURL + data.selected + '/properties/dataTable').load();
+                    }
+                })
+                .jstree({
+                    core: {
+                        data: {
+                            url: /*[[@{/private/objectClasses/jsTree}]]*/"",
+                            data: function (node) {
+                                return {
+                                    'id': node.id
+                                };
+                            }
+                        },
+                        themes: {
+                            name: 'proton',
+                            responsive: true
+                        }
+                    },
+                    "plugins": [
+                        "contextmenu", "dnd", "search",
+                        "state", "types", "wholerow"
+                    ]
+                });
+        });
+
+        let propertyTable = $('#property-table').DataTable({
+            ajax: {
+                url: /*[[@{/private/objectClasses/0/properties/dataTable}]]*/""
+            },
+            rowId: 'id',
+            defferLoading: 1,
+            serverSide: true,
+            drawCallback: function (settings) {
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            },
+            columns: [
+                {
+                    title: 'id',
+                    data: 'id',
+                    width: '4px'
+                },
+                {
+                    title: 'Наименование',
+                    data: 'property.name',
+                    width: '5rem'
+                },
+                {
+                    title: 'Норматив',
+                    data: 'standard',
+
+                    width: '5rem'
+                },
+                {
+                    title: 'Ед. Изм.',
+                    data: 'property.unit.name',
+                    width: '5rem'
+                },
+                {
+                    title: 'Н.Д. На методы исследования',
+                    data: 'property.unit.name',
+                    width: '5rem'
+                },
+                {
+                    title: 'Н.Д. На оценку',
+                    data: null,
+                    width: '5rem'
+                },
+                {
+                    title: "",
+                    data: null,
+                    width: "4px",
+                    className: "dt-center editor-edit align-middle",
+                    render: function (data, type, row, meta) {
+                        // return '<a href="' + objectClassPropertyUrl + '/' + data.id + '" class="text-info bi bi-pencil h4" />'
+                        return '<a href="/webService/private/objectClassProperties/' + data.id + '" class="text-info bi bi-pencil h4" />'
+                    },
+                    orderable: false
+                },
+                {
+                    title: "",
+                    data: null,
+                    width: "4px",
+                    className: "dt-center editor-delete align-middle",
+                    render: function (data, type, row, meta) {
+                        // return '<a href="' + objectClassPropertyUrl + '/' + data.id + '" onclick="return DeleteFunction(\'Удалить документ?\');" class="text-danger bi bi-trash h4"></a>'
+                        return '<a href="/webService/private/objectClassProperties/' + data.id + '/delete" onclick="return DeleteFunction(\'Удалить показатель?\');" class="text-danger bi bi-trash h4"/>'
+                    },
+                    orderable: false
+                }
+            ],
+            dom: "<'row'<'toolbar col-sm-12 col-md-6'><'col-sm-12 col-md-6'fb>>"
+                + "<'row'<'col-sm-12'tr>>"
+                + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-2'l><'col-sm-12 col-md-5'p>>",
+            columnDefs: [{
+                targets: '_all',
+                defaultContent: ""
+            }],
+        });
+    </script>
+    <!-- <script th:src="@{/js/object-class.js}"></script>-->
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/1.4.0/font/bootstrap-icons.css}"/>
+    <!--    <link rel="stylesheet" th:href="@{/webjars/datatables/1.10.23/css/jquery.dataTables.min.css}"/>-->
+    <link rel="stylesheet" th:href="@{/webjars/datatables-buttons/1.7.0/css/buttons.bootstrap4.min.css}"/>
+    <link rel="stylesheet" th:href="@{/webjars/datatables/1.10.23/css/dataTables.bootstrap4.min.css}"/>
+
+    <link rel="stylesheet" th:href="@{/webjars/datatables-select/1.3.3/css/select.bootstrap4.css}"/>
+    <link rel="stylesheet" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.css}"/>
+    <link rel="stylesheet" th:href="@{/webjars/jstree/3.3.8/themes/default/style.min.css}"/>
+    <link rel="stylesheet" th:href="@{/webjars/select2/4.0.13/css/select2.min.css}"/>
+    <link rel="stylesheet" th:href="@{/webjars/ttskch__select2-bootstrap4-theme/1.5.2/dist/select2-bootstrap4.min.css}"/>
+    <!--    <link rel="stylesheet" th:href="@{/webjars/select2-bootstrap-theme/0.1.0-beta.10/dist/select2-bootstrap.min.css}"/>-->
+    <!--    <link rel="stylesheet" th:href="@{/css/select2-bootstrap.min.css}"/>-->
+
+    <link rel="stylesheet" th:href="@{/css/objectClass.css}"/>
+    <link rel="shortcut icon" th:href="@{/favicon.ico}"/>
+
+    <!-- JS -->
+    <script class="default jquery" th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
+    <script class="default jquery-ui" th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+    <script class="default jquery-inputmask" th:src="@{/webjars/jquery.inputmask/5.0.5/jquery.inputmask.js}"></script>
+    <script class="default jquery-inputmask" th:src="@{/webjars/jquery.inputmask/5.0.5/bindings/inputmask.binding.js}"></script>
+
+    <!-- <script class="default" th:src="@{/webjars/popper.js/2.5.4/umd/popper.min.js}"></script> -->
+    <!-- <script class="default" th:src="@{/webjars/bootstrap/4.6.0/js/bootstrap.min.js}"></script> -->
+    <script class="default bootstrap" th:src="@{/webjars/bootstrap/4.6.0/js/bootstrap.bundle.min.js}"></script>
+    <script class="default dataTables" th:src="@{/webjars/datatables/1.10.23/js/jquery.dataTables.js}"></script>
+
+    <script class="default dataTables-buttons" th:src="@{/webjars/datatables-buttons/1.7.0/js/dataTables.buttons.min.js}"></script>
+    <script class="default dataTables-buttons" th:src="@{/webjars/datatables-buttons/1.7.0/js/buttons.bootstrap4.min.js}"></script>
+
+    <script class="default dataTables-select" th:src="@{/webjars/datatables-select/1.3.3/js/select.bootstrap4.js}"></script>
+    <script class="default dataTables-select" th:src="@{/webjars/datatables-select/1.3.3/js/dataTables.select.js}"></script>
+
+    <script class="default dataTables" th:src="@{/webjars/datatables/1.10.23/js/dataTables.bootstrap4.min.js}"></script>
+    <script class="default jstree" th:src="@{/webjars/jstree/3.3.8/jstree.min.js}"></script>
+    <script class="default select2" th:src="@{/webjars/select2/4.0.13/js/select2.full.min.js}"></script>
+
+    <script class="default" th:src="@{/js/defaults.js}" type="text/javascript"></script>
+
+</head>
+<body>
+
+<div th:fragment="standard_modal" id="modalDialog" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button id="cancel-button" type="button" class="btn btn-secondary" data-dismiss="modal"
+                        th:text="#{button.cancel.label}">Close
+                </button>
+                <button id="submit-button" type="button" class="btn btn-primary" th:text="#{button.submit.label}">Save
+                    changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="save_cancel_buttons" id="saveCancelButtons">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{button.cancel.label}">Close</button>
+    <button type="button" class="btn btn-primary" th:text="#{button.submit.label}">Save changes</button>
+</div>
+
+<div class="input-group input-group-sm form-group" th:fragment="input_text(fieldName)">
+    <div class="input-group-prepend">
+        <span th:id="${'equipment-__${fieldName}__'}" class="input-group-text" th:text="#{equipment.name.label}" style="width: 15rem;">Наименование</span>
+    </div>
+    <input type="text" class="form-control" th:field="*{__${fieldName}__}" th:aria-describedby="${'equipment-__${fieldName}__'}" th:classappend="${#fields.hasErrors(fieldName)} ? 'is-invalid'" th:placeholder="#{equipment.name.placeholder}" autocomplete="off" th:disabled="${readOnly}">
+    <div class="invalid-feedback" th:each="error: ${#fields.errors(fieldName)}" th:text="${error}"></div>
+</div>
+
+<div th:fragment="object_class_property_document_table(document_type_id,property_documents)" id="objectClassPropertyDocumentTable">
+    <div class="p-1">
+        <form th:action="@{|/private/objectClassProperties/${objectClassProperty.id}/documentsByType/${document_type_id}/add|}"
+              method="POST">
+            <button type="submit" class="btn btn-outline-dark btn-sm bi bi-file-earmark">
+                Добавить
+            </button>
+        </form>
+    </div>
+
+    <table id="object-class-property-document-table"
+           class="table table-striped table-hover table-bordered table-sm">
+        <thead class="thead-dark">
+        <tr>
+            <th class="text-center w-25">№</th>
+            <th class="text-center w-75">Наименование документа</th>
+            <th style="width: 4px"></th>
+            <th style="width: 4px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="ocpd, stat : ${property_documents}">
+            <td th:text="${stat.count}"></td>
+            <td th:text="${ocpd.document.header}"></td>
+            <td class="dt-center editor-edit align-middle">
+                <a href="" class="text-info bi bi-pencil h4"></a>
+            </td>
+            <td class="dt-center editor-delete align-middle">
+                <form method="POST"
+                      th:action="@{|/private/objectClassProperties/${objectClassProperty.id}/documentsByType/${document_type_id}/delete/${stat.index}|}">
+                    <button type="submit" class="btn btn-default p-0">
+                        <span class="text-danger bi bi-trash h4" aria-hidden="true"></span>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:fragment="success">
+    <h2>Успешно</h2>
+</div>
+</body>
+</html>

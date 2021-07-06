@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:mvc="http://www.springframework.org/schema/mvc" layout:decorate="~{layout.html}">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Insert title here</title>
+
+    <script>
+        $(document)
+            .ready(
+                function () {
+                    $('#example')
+                        .DataTable(
+                            {
+                                "ajax": {
+                                    "url": "[[@{/api/v1/users}]]",
+                                    "type": "POST",
+                                    "contentType": 'application/json',
+                                    "data": function (d) {
+                                        return JSON.stringify(d);
+                                    }
+                                },
+                                "columns": [
+                                    {
+                                        "title": "Id",
+                                        "data": "id",
+                                        "width": "2rem"
+                                    },
+                                    {
+                                        "title": "Логин",
+                                        "data": "username",
+                                        "width": "5rem"
+                                    },
+                                    {
+                                        "title": "Создан",
+                                        "data": "dateJoined",
+                                        "width": "5rem"
+                                    },
+                                    {
+                                        "title": "Входил",
+                                        "data": "lastLogin",
+                                        "width": "5rem"
+                                    },
+                                    {
+                                        "title": "[[#{login.password.label}]]",
+                                        "data": "password"
+                                    },
+                                    {
+                                        "title": "",
+                                        "data": null,
+                                        "width": "4px",
+                                        "className": "text-center",
+                                        // 														"defaultContent" : "<button class='btn btn-outline-dark btn-sm bi bi-pencil-fill'></button>",
+                                        "render": function (data, type, row, meta) {
+                                            return "<i class='h4 bi "
+                                                + (data.isActive ? "bi-check-circle text-success"
+                                                    : "bi-x-circle text-danger") + "'></i>";
+                                        },
+                                        "orderable": false
+                                    },
+                                    {
+                                        "title": "",
+                                        "data": null,
+                                        "width": "4px",
+                                        "className": "dt-center editor-edit",
+                                        // 														"defaultContent" : "<button class='btn btn-outline-dark btn-sm bi bi-pencil-fill'></button>",
+                                        "render": function (data, type, row, meta) {
+                                            return "<a href=[[@{/private/users/}]]" + data.id + " class='btn btn-outline-dark btn-sm bi bi-pencil-fill'/>";
+                                        },
+                                        "orderable": false
+                                    },
+                                    {
+                                        "title": "",
+                                        "data": null,
+                                        "width": "4px",
+                                        "className": "dt-center editor-delete",
+                                        // 														"defaultContent" : "<button href=[[@{/private/users/0?delete}]] class='btn btn-outline-dark btn-sm bi bi-trash'></button>",
+                                        "render": function (data, type, row, meta) {
+                                            return "<a href=[[@{/private/users/}]]"
+                                                + data.id
+                                                + "?delete class='btn btn-outline-dark btn-sm bi bi-trash' onclick='return DeleteFunction()'/>";
+                                        },
+                                        "orderable": false
+                                    }],
+                                "columnDefs": [{
+                                    "className": "text-center",
+                                    "targets": "_all"
+                                }],
+                                "serverSide": true,
+                                "dom": "<'row'<'toolbar col-sm-12 col-md-6'><'col-sm-12 col-md-6'fb>>"
+                                    + "<'row'<'col-sm-12'tr>>"
+                                    + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-2'l><'col-sm-12 col-md-5'p>>"
+                            });
+                    $("div.toolbar")
+                        .html(
+                            "<a class='btn btn-outline-dark btn-sm bi bi-person-plus' href=[[@{/private/users/0}]]>&nbsp;Создать</a>");
+                });
+
+        function DeleteFunction() {
+            if (confirm('Удалить пользователя?'))
+                return true;
+            else {
+                return false;
+            }
+        }
+    </script>
+
+</head>
+<body>
+<div layout:fragment="content">
+    <table id="example" class="table table-striped table-hover table-bordered table-sm" style="width: 100%">
+    </table>
+</div>
+</body>
+</html>

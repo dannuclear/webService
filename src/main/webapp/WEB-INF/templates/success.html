@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Insert title here</title>
+
+<!-- CSS -->
+<link rel="stylesheet" th:href="@{/css/jquery-ui.css}"></link>
+<link rel="stylesheet" th:href="@{/css/theme.css}"></link>
+
+<!-- JS -->
+<script th:src="@{/js/jquery.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery-ui.min.js}" type="text/javascript"></script>
+    <script th:src="@{/webjars/jquery/3.5.1/jquery.min.js}"></script>
+    <script  th:src="@{/webjars/popper.js/1.16.0/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/4.5.3/js/bootstrap.min.js}"  ></script>
+<script>
+	$(function() {
+		$(".widget input[type=submit], .widget a, .widget button").button();
+		// 		$("button, input, a").click(function(event) {
+		// 			event.preventDefault();
+		// 		});
+	});
+</script>
+</head>
+<body>
+	<div th:replace="fragments/header :: header"></div>
+
+<!-- 	<span sec:authentication="name">Anon</span> -->
+<!-- 	<span sec:authentication="principal.authorities">NONE</span> -->
+<!-- 	<span sec:authorize="hasRole('ROLE_ADMIN')">NONE</span> -->
+	
+	<h2 th:text="${{person.birthday}}" />
+	
+	<form action="#" th:action="@{/success}" method="post" th:object="${person}">
+		<!-- 		<input class="ui-widget ui-corner-all" type="text" th:field="*{name}"></input> -->
+		<input class="ui-widget ui-corner-all" type="text" th:field="*{surname}"></input>
+		<p th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}">Ошибка имени</p>
+		<input class="ui-button ui-widget ui-corner-all" type="submit" value="Submit" />
+	</form>
+
+
+</body>
+</html>

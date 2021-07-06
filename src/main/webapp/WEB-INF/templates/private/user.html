@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorate="~{layout.html}">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Insert title here</title>
+
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-sm-3 d-flex">
+				<div class="card col-sm-12">
+					<div class="card-body">
+						<form th:object="${user}" th:action="@{/private/users/{userId}(userId=${user.id})}" method="POST">
+							<input type="hidden" th:field="*{id}"> <input type="hidden" th:field="*{isSuperuser}">
+
+							<div class="form-group">
+								<label for="uname" th:text="#{login.username.label}">Username</label> <input type="text" class="form-control form-control-sm" id="uname" th:field="*{username}" th:classappend="${#fields.hasErrors('username')} ? is-invalid" th:placeholder="#{login.username.placeholder}" autocomplete="off">
+								<div class="invalid-feedback">
+									<p th:each="error: ${#fields.errors('username')}" th:text="${error}">Invalid data</p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="pwd" th:text="#{login.password.label}">Password</label> <input type="text" class="form-control form-control-sm" id="pwd" th:field="*{password}" th:classappend="${#fields.hasErrors('password')} ? is-invalid" th:placeholder="#{login.password.placeholder}" autocomplete="off">
+								<div class="invalid-feedback">
+									<p th:each="error: ${#fields.errors('password')}" th:text="${error}">Invalid data</p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="dateJoined" th:text="Дата">Дата</label> <input type="text" class="form-control form-control-sm" id="dateJoined" th:field="*{dateJoined}" th:classappend="${#fields.hasErrors('dateJoined')} ? is-invalid" th:placeholder="#{login.password.placeholder}" autocomplete="off">
+								<div class="invalid-feedback">
+									<p th:each="error: ${#fields.errors('dateJoined')}" th:text="${error}">Invalid data</p>
+								</div>
+							</div>
+							<div class="form-group form-check" th:if="*{not isSuperuser}">
+								<input type="checkbox" class="form-check-input" th:field="*{isActive}" id="isActive"> <label class="form-check-label" for="isActive">Active</label>
+							</div>
+							<div class="d-flex justify-content-end">
+								<a th:href="@{/private/users}" class="btn btn-secondary mr-1 button-sm" data-dismiss="modal">Отмена</a>
+								<button type="submit" class="btn btn-primary button-sm" th:text="#{button.submit.label}">Save changes</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-3 d-flex">
+				<div class="card col-sm-12">
+					<div class="card-header">
+						<form th:action="@{/private/users/{userId}(userId=${user.id}, addRole)}" method="post">
+							<div class="input-group">
+								<select class="custom-select custom-select-sm" name="roleId">
+									<option th:each="role: ${roles}" th:text="${role.name}" th:value="${role.id}"></option>
+								</select>
+								<div class="input-group-append">
+									<button type="submit" class='btn btn-outline-dark btn-sm bi bi-people'>&nbsp;Добавить</button>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="card-body p-0">
+						<table class="table table-striped table-hover table-bordered table-sm">
+							<thead>
+								<tr>
+									<th class="text-center">РОЛИ</th>
+									<th />
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="role : ${user.roles}">
+									<td class="p-1" th:text="${role.name}"></td>
+									<td class="p-1" style="width: 4px">
+										<a th:href="@{/private/users/{userId}/roles/{roleId}/delete(userId=${user.id}, roleId=${role.id})}" class='text-danger bi bi-trash'></a>
+									</td>
+								<tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-3 d-flex">
+				<div class="card col-sm-12">
+					<div class="card-header">
+						<form th:action="@{/private/users/{userId}(userId=${user.id}, addPermission)}" method="post">
+							<div class="input-group">
+								<select class="custom-select custom-select-sm" name="permissionId">
+									<option th:each="perm: ${permissions}" th:text="${perm.name}" th:value="${perm.id}"></option>
+								</select>
+								<div class="input-group-append">
+									<button type="submit" class='btn btn-outline-dark btn-sm bi bi-key'>&nbsp;Добавить</button>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="card-body p-0">
+						<table class="table table-striped table-hover table-bordered table-sm">
+							<thead>
+								<tr>
+									<th class="text-center">РАЗРЕШЕНИЯ</th>
+									<th />
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="perm : ${user.permissions}">
+									<td class="p-1" th:text="${perm.name}"></td>
+									<td class="p-1" style="width: 4px">
+										<!-- 										<form th:action="@{/private/users/{userId}(userId=${user.id}, deletePermission)}" method="post"> -->
+										<!-- 											<input type="hidden" name="permissionId" th:value="${perm.id}" /> -->
+										<!-- 										<div class="input-group"> -->
+										<a th:href="@{/private/users/{userId}/permissions/{permissionId}/delete(userId=${user.id}, permissionId=${perm.id})}" class='text-danger bi bi-trash'></a>
+										<!-- 										</div> -->
+										<!-- 										</form> -->
+									</td>
+								<tr>
+							</tbody>
+						</table>
+					</div>
+					<!-- 					<div class="card-body"> -->
+					<!-- 						<table id="permissionsTable" class="table table-striped table-hover table-bordered table-sm" style="width: 100%"></table> -->
+					<!-- 					</div> -->
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

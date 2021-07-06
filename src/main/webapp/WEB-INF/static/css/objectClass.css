@@ -1,0 +1,6 @@
+@charset "UTF-8";
+
+#jstree_demo_div a {
+	white-space: normal;
+	height: auto;
+}

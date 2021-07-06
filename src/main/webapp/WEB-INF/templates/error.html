@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Вход в систему</title>
+<!-- CSS -->
+<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.6.0/css/bootstrap.min.css}"></link>
+<link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/1.4.0/font/bootstrap-icons.css}" />
+<link rel="stylesheet" th:href="@{/webjars/datatables/1.10.23/css/dataTables.bootstrap5.min.css}" />
+<link rel="stylesheet" th:href="@{/css/error.css}"></link>
+
+<!-- JS -->
+<script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.6.0/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/webjars/datatables/1.10.23/js/jquery.dataTables.min.js}"></script>
+<script th:src="@{/webjars/datatables/1.10.23/js/dataTables.bootstrap4.min.js}"></script>
+
+</head>
+<body>
+	<div class="container">
+		<div class="row ">
+			<div class="col-md-12">
+				<div class="error-template">
+					<h1 th:text="'Oops! ' + ${status}"></h1>
+					<h2 th:text="${error}">Произошла ошибка</h2>
+					<div class="error-details" th:text="${timestamp} + ':' + ${message} "></div>
+					<div class="error-actions">
+						<a onclick="window.history.back();"  class="btn btn-primary btn-lg">
+							<span class="glyphicon glyphicon-home"></span> Вернуться назад
+						</a>
+						<a onclick="window.history.back();" class="btn btn-light btn-lg">
+							<span class="glyphicon glyphicon-envelope"></span> Техподдержка
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<table>
+			<tr>
+				<td>ex</td>
+				<td th:text="${trace}" />
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

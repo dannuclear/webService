@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout.html}">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Документ</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-7 d-flex">
+            <div class="card col-sm-12">
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="home-tab" data-toggle="tab" href="#main" role="tab" aria-controls="home" aria-selected="true" th:classappend="${param.tab == null or param.tab[0] == 'main'?'active':''}">Оборудование</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#verifications" role="tab" aria-controls="profile" aria-selected="false" th:classappend="${param.tab != null and param.tab[0] == 'verifications'?'active':''}">Поверка</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#maintenances" role="tab" aria-controls="contact" aria-selected="false" th:classappend="${param.tab != null and param.tab[0] == 'maintenances'?'active':''}">Техническое
+                                обслуживание</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade border p-2" id="main" role="tabpanel" aria-labelledby="home-tab" th:classappend="${param.tab == null or param.tab[0] == 'main'?'show active':''}">
+                            <form id="equipment-form" th:action="${equipment?.id != null} ? @{/private/equipment/{id}(id=${equipment.id})} : @{/private/equipments/new}" th:object="${equipment}" method="POST">
+                                <div class="mb-2">
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend">
+                                            <span id="equipment-name" class="input-group-text" th:text="#{equipment.name.label}" style="width: 15rem;">Наименование</span>
+                                        </div>
+                                        <input type="text" class="form-control" th:field="*{name}" aria-describedby="equipment-name" th:errorclass="is-invalid" th:placeholder="#{equipment.name.placeholder}" autocomplete="off" th:disabled="${readOnly}">
+                                        <div class="invalid-feedback" th:each="error: ${#fields.errors('name')}" th:text="${error}"></div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-row mb-2">
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend">
+                                            <span id="equipment-series" class="input-group-text" th:text="#{equipment.series.label}" style="width: 15rem;">Серийный номер</span>
+                                        </div>
+                                        <input type="text" class="form-control" th:field="*{series}" aria-describedby="equipment-series" th:errorclass="is-invalid" th:placeholder="#{equipment.series.placeholder}" autocomplete="off" th:disabled="${readOnly}">
+                                        <div class="invalid-feedback" th:each="error: ${#fields.errors('series')}" th:text="${error}"></div>
+                                    </div>
+
+                                    <div class="input-group input-group-sm ml-1">
+                                        <div class="input-group-prepend">
+                                            <span id="equipment-inventory" class="input-group-text" th:text="#{equipment.inventory.label}" style="width: 15rem;">Серийный номер</span>
+                                        </div>
+                                        <input type="text" class="form-control" th:field="*{inventory}" aria-describedby="equipment-inventory" th:errorclass="is-invalid" th:placeholder="#{equipment.inventory.placeholder}" autocomplete="off" th:disabled="${readOnly}">
+                                        <div class="invalid-feedback" th:each="error: ${#fields.errors('inventory')}" th:text="${error}"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2">
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="equipment-type" th:text="#{equipmentType}" style="width: 15rem;">Тип оборудования</span>
+                                        </div>
+                                        <select class="equipment-type-select2 form-control" name="equipmentType" th:classappend="${#fields.hasErrors('equipmentType')} ? 'is-invalid'" th:disabled="${readOnly}">
+                                            <option th:value="*{equipmentType.id}" th:text="*{equipmentType.name}" th:if="*{equipmentType != null}"></option>
+                                        </select>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary bi bi-search" type="button" id="button-browse" data-toggle="modal" data-target="#equipment-type-table-dialog"></button>
+                                        </div>
+                                        <div class="invalid-feedback" th:each="error: ${#fields.errors('equipmentType')}" th:text="${error}"></div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-row mb-2">
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend">
+                                            <span id="equipment-current-verification" class="input-group-text bg-success" th:text="#{equipment.verification.current}" style="width: 15rem;">Поверка</span>
+                                        </div>
+                                        <input type="text" class="form-control" th:value="|*{verification?.num} от *{{verification?.createDate}}|" aria-describedby="equipment-current-verification" th:disabled="true" th:if="*{verification != null}">
+                                    </div>
+
+                                    <div class="input-group input-group-sm ml-1">
+                                        <div class="input-group-prepend">
+                                            <span id="equipment-current-maintenance" class="input-group-text bg-success" th:text="#{equipment.maintenance.current}" style="width: 15rem;">Т.О.</span>
+                                        </div>
+                                        <input type="text" class="form-control" th:value="|*{maintenance?.num} от *{{maintenance?.createDate}}|" aria-describedby="equipment-current-maintenance" th:disabled="true" th:if="*{maintenance != null}">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade border p-2 container-fluid" id="verifications" role="tabpanel" aria-labelledby="profile-tab" th:classappend="${param.tab != null and param.tab[0] == 'verifications'?'show active': ''}">
+                            <form id="equipment-verification-form" th:object="${equipmentVerification}" method="POST">
+                                <div class="d-flex flex-row mb-1">
+                                    <div class="flex-shrink-0">
+                                        <div class="input-group input-group-sm" th:classappend="${#fields.hasErrors('num')} ? 'is-invalid'">
+                                            <div class="input-group-prepend">
+                                                <span id="equipment-verification-num" class="input-group-text" th:text="#{equipment.verification.num.label}">Номер</span>
+                                            </div>
+                                            <input type="text" class="form-control" th:field="*{num}" aria-describedby="equipment-verification-num" th:placeholder="#{equipment.verification.num.placeholder}" autocomplete="off" th:errorclass="is-invalid" th:disabled="${readOnly}">
+                                        </div>
+                                        <div class="invalid-feedback" th:each="error: ${#fields.errors('num')}" th:text="${error}"></div>
+                                    </div>
+                                    <div class="ml-1 flex-shrink-0">
+                                        <div class="input-group input-group-sm" th:classappend="${#fields.hasErrors('createDate')} ? 'is-invalid'">
+                                            <div class="input-group-prepend">
+                                                <span id="equipment-verification-createDate" class="input-group-text" th:field="*{createDate}" th:text="#{equipment.verification.createDate.label}">Дата/время отбора</span>
+                                            </div>
+                                            <input data-inputmask-alias="datetime" data-inputmask-inputformat="dd.mm.yyyy" data-inputmask-placeholder="_" type="text" class="form-control" id="datepicker" th:field="*{createDate}" aria-describedby="equipment-verification-createDate" th:errorclass="is-invalid" th:placeholder="#{equipment.verification.createDate.placeholder}" autocomplete="off">
+                                        </div>
+                                        <div class="invalid-feedback" th:each="error: ${#fields.errors('createDate')}" th:text="${error}"></div>
+                                    </div>
+                                    <div class="flex-grow-1 input-group-sm">
+                                        <div class="input-group-append justify-content-end">
+                                            <button type="submit" class="btn btn-primary button-sm" name="addVerification" th:text="#{button.add.label}">Добавить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <table class="table table-hover table-bordered table-xsm">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th class="text-center w-5">№</th>
+                                    <th class="text-center w-10">Дата</th>
+                                    <th class="text-center w-10">Номер</th>
+                                    <th></th>
+                                    <th style="width: 4px"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="vrf, stat : ${equipment.verifications}">
+                                    <td th:text="${stat.count}" class="text-center"></td>
+                                    <td th:text="${{vrf.createDate}}" class="text-center"></td>
+                                    <td th:text="${vrf.num}"></td>
+                                    <td></td>
+
+                                    <td class="dt-center editor-delete align-middle">
+                                        <form method="POST" th:action="@{#}">
+                                            <button type="submit" name="deleteVerificationIdx" th:value="${stat.index}" class="btn btn-default p-0">
+                                                <span class="text-danger bi bi-trash h5" aria-hidden="true"></span>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="tab-pane fade border p-2 container-fluid" id="maintenances" role="tabpanel" aria-labelledby="contact-tab" th:classappend="${param.tab != null and param.tab[0] == 'maintenances'?'show active': ''}">
+                            <form id="equipment-maintenance-form" th:object="${equipmentMaintenance}" method="POST">
+                                <div class="d-flex flex-row mb-1">
+                                    <div class="flex-shrink-0">
+                                        <div class="input-group input-group-sm flex-shrink-0" th:classappend="${#fields.hasErrors('num')} ? 'is-invalid'">
+                                            <div class="input-group-prepend">
+                                                <span id="equipment-maintenance-num" class="input-group-text" th:text="#{equipment.maintenance.num.label}">Номер</span>
+                                            </div>
+                                            <input type="text" class="form-control" th:field="*{num}" aria-describedby="equipment-maintenance-num" th:errorclass="is-invalid" th:placeholder="#{equipment.maintenance.num.placeholder}" autocomplete="off" th:disabled="${readOnly}">
+                                        </div>
+                                        <div class="invalid-feedback" th:each="error: ${#fields.errors('num')}" th:text="${error}"></div>
+                                    </div>
+                                    <div class="ml-1 flex-shrink-0">
+                                        <div class="input-group input-group-sm" th:classappend="${#fields.hasErrors('createDate')} ? 'is-invalid'">
+                                            <div class="input-group-prepend">
+                                                <span id="equipment-maintenance-createDate" class="input-group-text" th:field="*{createDate}" th:text="#{equipment.maintenance.createDate.label}">Дата/время отбора</span>
+                                            </div>
+
+                                            <input data-inputmask-alias="datetime" data-inputmask-inputformat="dd.mm.yyyy" data-inputmask-placeholder="_" type="text" class="form-control" th:field="*{createDate}" aria-describedby="equipment-maintenance-createDate" th:errorclass="is-invalid" th:placeholder="#{equipment.maintenance.createDate.placeholder}" autocomplete="off">
+                                        </div>
+                                        <div class="invalid-feedback" th:each="error: ${#fields.errors('createDate')}" th:text="${error}"></div>
+                                    </div>
+                                    <div class="flex-grow-1 input-group-sm">
+                                        <div class="input-group-append justify-content-end">
+                                            <button type="submit" class="btn btn-primary button-sm" name="addMaintenance" th:text="#{button.add.label}">Добавить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <table class="table table-hover table-bordered table-xsm">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th class="text-center w-5">№</th>
+                                    <th class="text-center w-10">Дата</th>
+                                    <th class="text-center w-10">Номер</th>
+                                    <th></th>
+                                    <th style="width: 4px"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="vrf, stat : ${equipment.maintenances}">
+                                    <td th:text="${stat.count}" class="text-center"></td>
+                                    <td th:text="${{vrf.createDate}}" class="text-center"></td>
+                                    <td th:text="${vrf.num}"></td>
+                                    <td></td>
+
+                                    <td class="dt-center editor-delete align-middle">
+                                        <form th:action="@{#}" method="POST">
+                                            <button type="submit" name="deleteMaintenanceIdx" th:value="${stat.index}" class="btn btn-default p-0">
+                                                <span class="text-danger bi bi-trash h5" aria-hidden="true"></span>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-3">
+                        <a th:href="@{/private/equipments}" class="btn btn-secondary mr-1 button-sm" data-dismiss="modal">Отмена</a>
+                        <button form="equipment-form" type="submit" class="btn btn-primary button-sm" th:text="#{button.submit.label}">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="equipment-type-table-dialog" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="equipment-type-table">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-striped table-hover table-bordered table-sm equipment-type-select-table w-100"></table>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="cancel-button" type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{button.cancel.label}">
+                            Close
+                        </button>
+                        <button id="submit-button" type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{button.submit.label}">
+                            Сохранить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script class="default" th:src="@{/js/equipments.js}" type="text/javascript"></script>
+        <script class="default" th:src="@{/js/equipmentTypes.js}" type="text/javascript"></script>
+    </div>
+</div>
+</body>
+</html>
