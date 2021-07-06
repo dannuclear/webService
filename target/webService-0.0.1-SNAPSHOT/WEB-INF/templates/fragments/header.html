@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3" th:fragment="header">
+		<!-- 		<a class="navbar-brand" href="#">LAB</a> -->
+		<svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" fill="currentColor" class="bi bi-at" viewBox="0 0 16 16">
+  			<path
+				d="M13.106 7.222c0-2.967-2.249-5.032-5.482-5.032-3.35 0-5.646 2.318-5.646 5.702 0 3.493 2.235 5.708 5.762 5.708.862 0 1.689-.123 2.304-.335v-.862c-.43.199-1.354.328-2.29.328-2.926 0-4.813-1.88-4.813-4.798 0-2.844 1.921-4.881 4.594-4.881 2.735 0 4.608 1.688 4.608 4.156 0 1.682-.554 2.769-1.416 2.769-.492 0-.772-.28-.772-.76V5.206H8.923v.834h-.11c-.266-.595-.881-.964-1.6-.964-1.4 0-2.378 1.162-2.378 2.823 0 1.737.957 2.906 2.379 2.906.8 0 1.415-.39 1.709-1.087h.11c.081.67.703 1.148 1.503 1.148 1.572 0 2.57-1.415 2.57-3.643zm-7.177.704c0-1.197.54-1.907 1.456-1.907.93 0 1.524.738 1.524 1.907S8.308 9.84 7.371 9.84c-.895 0-1.442-.725-1.442-1.914z" />
+		</svg>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item dropdown">
+					<a class="nav-link bi bi-house" th:href="@{/private/main}">
+						Главная <span class="sr-only">(current)</span>
+					</a>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle bi bi-journals" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;Журналы</a>
+					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+						<a class="dropdown-item bi bi-eyedropper" th:href="@{/private/samples}" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('SAMPLE_READ', 'SAMPLE_EDIT')">&nbsp;Регистрация проб</a>
+						<a class="dropdown-item" href="#" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('SELECTION_READ', 'SELECTION_EDIT')">&nbsp;Журнал отбора</a>
+						<a class="dropdown-item" href="#" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('RESEARCH_READ', 'RESEARCH_EDIT')">&nbsp;Журнал протоколов исследований</a>
+						<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="#">&nbsp;Журнал заявок</a>
+					</div>
+				</li>
+				<li class="nav-item dropdown" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('DECLARANT_READ', 'DECLARANT_EDIT')">
+					<a class="nav-link dropdown-toggle bi bi-stack" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;Справочники</a>
+					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+						<a class="dropdown-item bi bi-book" th:href="@{/private/documents}">&nbsp;Документы</a>
+						<a class="dropdown-item bi bi-book-half" th:href="@{/private/documentTypes}">&nbsp;Типы документов</a>
+						<a class="dropdown-item bi bi-house-door" href="#">&nbsp;Заказчики</a>
+					</div>
+				</li>
+				<li class="nav-item dropdown" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('EQUIPMENT_READ', 'EQUIPMENT_EDIT')">
+					<a class="nav-link dropdown-toggle bi bi-basket" href="#" id="navbarEquipment" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;Оборудование</a>
+					<div class="dropdown-menu" aria-labelledby="navbarEquipment">
+						<a class="dropdown-item bi bi-house-door" th:href="@{/private/equipments}">&nbsp;Оборудование</a>
+						<a class="dropdown-item bi bi-house-door" th:href="@{/private/equipmentTypes}">&nbsp;Типы оборудования</a>
+					</div>
+				</li>
+				<li class="nav-item dropdown" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('DOCUMENT_READ', 'DOCUMENT_EDIT')">
+					<a class="nav-link dropdown-toggle bi bi-book" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;Область аккредитации</a>
+					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+						<a class="dropdown-item bi bi-book" th:href="@{/private/objectClasses}">&nbsp;Классы объектов исследования</a>
+					</div>
+				</li>
+				<li class="nav-item dropdown" sec:authorize="hasAnyRole('ADMIN', 'USER') or hasAnyAuthority('USER_READ', 'USER_EDIT')">
+					<a class="nav-link dropdown-toggle bi bi-gear" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;Система</a>
+					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+						<a class="dropdown-item bi bi-people" th:href="@{/private/users}">&nbsp;Пользователи и группы</a>
+						<a class="dropdown-item bi bi-shuffle" th:href="@{/private/sessions}">&nbsp;Активные сессии</a>
+					</div>
+				</li>
+			</ul>
+
+			<ul class="nav navbar-nav navbar-right text-right">
+				<li th:if="${#authorization.expression('!isAuthenticated()')}">
+					<a href="/login" th:href="@{/login}">
+						<span class="bi bi-alarm-fill" aria-hidden="true"></span> &nbsp;Вход
+					</a>
+				</li>
+				<li th:if="${#authorization.expression('isAuthenticated()')}">
+					<div class="btn-group">
+						<div id="dropdownMenuButton" class="btn btn-sm btn-outline-secondary dropdown-toggle" sec:authentication="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></div>
+						<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+							<a href="/logout" th:href="@{#}" onclick="$('#form').submit();" class="bi bi-door-open dropdown-item" aria-hidden="true">
+								<!-- 						<span class="bi bi-door-open" aria-hidden="true"></span> -->
+								&nbsp;Выход
+							</a>
+						</div>
+					</div>
+
+					<form style="visibility: hidden" id="form" method="post" action="#" th:action="@{/logout}"></form>
+				</li>
+			</ul>
+		</div>
+	</nav>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Вход в систему</title>
+<!-- CSS -->
+<link th:replace="fragments/fragments.html :: link"/>
+<link rel="stylesheet" th:href="@{/css/login.css}"/>
+
+<!-- JS -->
+<script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
+<script th:src="@{/webjars/datatables/1.10.23/js/jquery.dataTables.min.js}"></script>
+<script th:src="@{/webjars/datatables/1.10.23/js/dataTables.bootstrap5.min.js}"></script>
+<script th:src="@{/webjars/popper.js/2.5.4/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.6.0/js/bootstrap.min.js}"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="d-flex justify-content-center h-100">
+			<div class="card col-md-7 col-lg-5">
+				<div class="card-header">
+					<h3 th:text="#{login.header}"></h3>
+					<div class="d-flex justify-content-end social_icon">
+						<span><i class="fab fa-facebook-square"></i></span> <span><i class="fab fa-google-plus-square"></i></span> <span><i class="fab fa-twitter-square"></i></span>
+					</div>
+				</div>
+				<div class="card-body">
+					<p th:if="${errorMessage}" class="text-danger" th:text="#{login.error.message}">Wrong user or password</p>
+					<form class="form-signin" method="post" th:action=@{login}>
+						<div class="input-group form-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="bi bi-person"></i></span>
+							</div>
+							<input type="text" id="username" name="username" class="form-control" th:placeholder="#{login.username.placeholder}" required autofocus>
+						</div>
+						<div class="input-group form-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="bi bi-key"></i></span>
+							</div>
+							<input type="password" id="password" name="password" class="form-control" th:placeholder="#{login.password.placeholder}" required>
+						</div>
+						<div class="custom-control custom-checkbox mb-3 remember" >
+							<input type="checkbox" class="custom-control-input" id="rememberMeCheckBox">
+							<label class="custom-control-label" for="rememberMeCheckBox" th:text="#{login.rememberme.label}">remember me</label>
+						</div>
+						
+						<div class="form-group">
+							<input type="submit" th:value="#{login.signin}" class="btn float-right login_btn w-100">
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
