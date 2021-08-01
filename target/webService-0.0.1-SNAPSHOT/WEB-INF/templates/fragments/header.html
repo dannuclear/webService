@@ -32,10 +32,11 @@
 					</div>
 				</li>
 				<li class="nav-item dropdown" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('DECLARANT_READ', 'DECLARANT_EDIT')">
-					<a class="nav-link dropdown-toggle bi bi-stack" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;Справочники</a>
+					<a class="nav-link dropdown-toggle bi bi-stack" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;Справочники</a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 						<a class="dropdown-item bi bi-book" th:href="@{/private/documents}">&nbsp;Документы</a>
 						<a class="dropdown-item bi bi-book-half" th:href="@{/private/documentTypes}">&nbsp;Типы документов</a>
+						<a class="dropdown-item bi bi-book-half" th:href="@{/private/report/all}">&nbsp;Отчеты</a>
 						<a class="dropdown-item bi bi-house-door" href="#">&nbsp;Заказчики</a>
 					</div>
 				</li>
