@@ -1,19 +1,95 @@
-/**
- * 
- */
-function DeleteFunction() {
-	if (confirm('Удалить пробу?'))
-		return true;
-	else {
-		return false;
-	}
-}
-/*[[@{/api/v1/samples}]]*/
-//
-//$(document).ready(
-//	function() {
-//		$('#sampleTable').DataTable({
-//
-//		})
-//	}
-//)
+var sampleLang = {
+    info: 'Страница _PAGE_ из _PAGES_',
+    lengthMenu: 'На странице _MENU_',
+    zeroRecords: 'Проб не найдено',
+    infoEmpty: 'Не найдено',
+    search: "Поиск",
+    processing: "Загрузка...",
+    loadingRecords: "Загрузка...",
+    paginate: {
+        first: "|<",
+        last: ">|",
+        next: ">",
+        previous: "<"
+    }
+};
+
+var editButton = {
+    title: "",
+    data: null,
+    width: "4px",
+    className: "dt-center editor-edit align-middle",
+    render: function (data, type, row, meta) {
+        return '<a href="/webService/private/samples/' + data.id + '" class="text-info bi bi-pencil h4"></a>'
+    },
+    orderable: false
+};
+
+var deleteButton = {
+    title: "",
+    data: null,
+    width: "4px",
+    className: "dt-center editor-delete align-middle",
+    render: function (data, type, row, meta) {
+        return '<a href="/webService/private/samples/' + data.id + '/delete" onclick="return DeleteFunction(\'Удалить документ?\');" class="text-danger bi bi-trash h4"></a>'
+    },
+    orderable: false
+};
+
+$(document)
+    .ready(
+        function () {
+            console.log('sample js load');
+            var selected = [];
+
+            $('.nav-tabs a').on('shown.bs.tab', function (e) {
+                var tab = e.target.hash.substring(1);
+                window.history.pushState("", "", "?tab=" + tab);
+            });
+
+            $('.sample-table, .sample-select-table')
+                .DataTable(
+                    {
+                        ajax: {
+                            url: '/webService/private/samples/dataTable'
+                        },
+                        rowId: 'id',
+                        pagingType: 'first_last_numbers',
+                        language: sampleLang,
+                        rowCallback: function (row, data) {
+                            if ($.inArray(row.id, selected) !== -1) {
+                                $(row).addClass('selected');
+                            }
+                        },
+                        columns: [
+                            {
+                                title: 'Код',
+                                data: 'code',
+                                width: '5rem',
+                                className: 'h5 text-body-right text-center'
+                            },
+                            {
+                                title: 'Дата отбора',
+                                data: 'selectionDateTime',
+                                width: '12rem',
+                                className: 'h5 text-center'
+                            },
+                            {
+                                title: 'Наименование образца/пробы',
+                                data: 'name',
+                                className: 'h5'
+                            },
+                            editButton,
+                            deleteButton
+                        ],
+                        buttons: [
+                            {
+                                text: '&nbsp;Создать',
+                                className: 'btn btn-info btn-sm bi bi-person-plus',
+                                action: function (e, dt, node, config) {
+                                    window.location.href = '/webService/private/samples/new';
+                                }
+                            }
+                        ]
+                    });
+        });

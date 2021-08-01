@@ -5,6 +5,7 @@
     <title>Документ</title>
 </head>
 <body>
+
 <div layout:fragment="content">
     <div class="row">
         <div class="col-sm-7 d-flex">
@@ -24,7 +25,7 @@
                     </ul>
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade border p-2" id="main" role="tabpanel" aria-labelledby="home-tab" th:classappend="${param.tab == null or param.tab[0] == 'main'?'show active':''}">
-                            <form id="equipment-form" th:action="${equipment?.id != null} ? @{/private/equipment/{id}(id=${equipment.id})} : @{/private/equipments/new}" th:object="${equipment}" method="POST">
+                            <form id="equipment-form" th:action="${equipment?.id != null} ? @{/private/equipments/{id}(id=${equipment.id})} : @{/private/equipments/new}" th:object="${equipment}" method="POST">
                                 <div class="mb-2">
                                     <div class="input-group input-group-sm">
                                         <div class="input-group-prepend">

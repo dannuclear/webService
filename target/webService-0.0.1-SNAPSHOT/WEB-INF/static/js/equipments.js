@@ -17,17 +17,16 @@ var equipmentLang = {
 $(document)
     .ready(
         function () {
-            console.log('document types js load');
+            console.log('equipment js load');
             var selected = [];
 
-            var documentTypeSelect2 = $('.document-type-select2').select2({
-                theme: 'bootstrap4',
+            var equipmentSelect2 = $('.equipment-select2').select2({
                 containerCssClass: 'custom-class',
                 rowId: 'id',
                 // dropdownCssClass: ':all:',
                 ajax: {
                     url: function (params) {
-                        return "/webService/api/v1/documentTypes" + (params.term === undefined ? '' : '?search=' + params.term);
+                        return "/webService/api/v1/equipments" + (params.term === undefined ? '' : '?search=' + params.term);
                     },
                     dataType: 'json',
                     cache: false,
@@ -35,7 +34,7 @@ $(document)
                     processResults: function (data) {
                         if (data._embedded == undefined)
                             return {results: []};
-                        let result = $.map(data._embedded.documentTypeList, function (item, index) {
+                        let result = $.map(data._embedded.equipments, function (item, index) {
                             return {
                                 id: item.id,
                                 text: item.name

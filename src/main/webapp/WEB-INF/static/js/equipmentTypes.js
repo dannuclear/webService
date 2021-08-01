@@ -21,7 +21,7 @@ $(document)
             var selected = [];
 
             var documentTypeSelect2 = $('.equipment-type-select2').select2({
-                theme: 'bootstrap4',
+                // theme: 'bootstrap4',
                 containerCssClass: 'custom-class',
                 // dropdownCssClass: ':all:',
                 ajax: {

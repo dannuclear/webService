@@ -1,4 +1,4 @@
-var sampleLang = {
+var reportLang = {
     info: 'Страница _PAGE_ из _PAGES_',
     lengthMenu: 'На странице _MENU_',
     zeroRecords: 'Проб не найдено',
@@ -20,7 +20,7 @@ var editButton = {
     width: "4px",
     className: "dt-center editor-edit align-middle",
     render: function (data, type, row, meta) {
-        return '<a href="/webService/private/samples/' + data.id + '" class="text-info bi bi-pencil h4"></a>'
+        return '<a href="/webService/private/reports/' + data.id + '" class="text-info bi bi-pencil h4"></a>'
     },
     orderable: false
 };
@@ -31,7 +31,7 @@ var deleteButton = {
     width: "4px",
     className: "dt-center editor-delete align-middle",
     render: function (data, type, row, meta) {
-        return '<a href="/webService/private/samples/' + data.id + '/delete" onclick="return DeleteFunction(\'Удалить документ?\');" class="text-danger bi bi-trash h4"></a>'
+        return '<a href="/webService/private/reports/' + data.id + '/delete" onclick="return DeleteFunction(\'Удалить документ?\');" class="text-danger bi bi-trash h4"></a>'
     },
     orderable: false
 };
@@ -39,7 +39,7 @@ var deleteButton = {
 $(document)
     .ready(
         function () {
-            console.log('sample js load');
+            console.log('report js load');
             var selected = [];
 
             $('.nav-tabs a').on('shown.bs.tab', function (e) {
@@ -47,15 +47,15 @@ $(document)
                 window.history.pushState("", "", "?tab=" + tab);
             });
 
-            $('.sample-table, .sample-select-table')
+            $('.report-table, .report-select-table')
                 .DataTable(
                     {
                         ajax: {
-                            url: '/webService/private/samples/dataTable'
+                            url: '/webService/private/reports/dataTable'
                         },
                         rowId: 'id',
                         pagingType: 'first_last_numbers',
-                        language: sampleLang,
+                        language: reportLang,
                         rowCallback: function (row, data) {
                             if ($.inArray(row.id, selected) !== -1) {
                                 $(row).addClass('selected');
@@ -64,18 +64,12 @@ $(document)
                         columns: [
                             {
                                 title: 'Код',
-                                data: 'code',
+                                data: 'id',
                                 width: '5rem',
                                 className: 'h5 text-body-right text-center'
                             },
                             {
-                                title: 'Дата отбора',
-                                data: 'selectionDateTime',
-                                width: '12rem',
-                                className: 'h5 text-center'
-                            },
-                            {
-                                title: 'Наименование образца/пробы',
+                                title: 'Наименование',
                                 data: 'name',
                                 className: 'h5'
                             },
@@ -87,7 +81,7 @@ $(document)
                                 text: '&nbsp;Создать',
                                 className: 'btn btn-info btn-sm bi bi-person-plus',
                                 action: function (e, dt, node, config) {
-                                    window.location.href = '/webService/private/samples/new';
+                                    window.location.href = '/webService/private/reports/new';
                                 }
                             }
                         ]

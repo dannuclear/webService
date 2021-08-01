@@ -38,9 +38,6 @@ public class EquipmentController {
     public static final String EDIT_VIEW = "/private/equipment/edit";
     public static final String ALL_VIEW = "/private/equipment/all";
     public static final String REDIRECT_ALL_URL = "redirect:/private/equipments";
-    public static final String REDIRECT_EDIT_URL = "redirect:/private/equipments/{equipmentId}";
-    public static final String REDIRECT_NEW_URL = "redirect:/private/equipments/new";
-
 
     private final EquipmentService equipmentService;
 

@@ -16,49 +16,49 @@ import ru.mephi3.service.SampleService;
 @RequiredArgsConstructor
 public class SampleServiceImpl implements SampleService {
 
-	private final SampleRepository sampleRepository;
+    private final SampleRepository sampleRepository;
 
-	@Override
-	@PreAuthorize("hasAuthority('SAMPLE_EDIT') or hasAnyRole('ADMIN')")
-	public Sample save(Sample sample) {
-		Sample res = sampleRepository.save(sample);
-		return res;
-	}
+    @Override
+    @PreAuthorize("hasAuthority('SAMPLE_EDIT') or hasAnyRole('ADMIN')")
+    public Sample save(Sample sample) {
+        Sample res = sampleRepository.save(sample);
+        return res;
+    }
 
-	@Override
-	@PreAuthorize("hasAuthority('SAMPLE_EDIT') or hasAnyRole('ADMIN')")
-	public Sample create(String code) {
-		Sample sample = new Sample();
-		return sample;
-	}
+    @Override
+    @PreAuthorize("hasAuthority('SAMPLE_EDIT') or hasAnyRole('ADMIN')")
+    public Sample create(String code) {
+        Sample sample = new Sample();
+        return sample;
+    }
 
-	@Override
-	@PreAuthorize("hasAuthority('SAMPLE_READ') or hasRole('ADMIN')")
-	public Optional<Sample> findById(Integer id) {
-		Optional<Sample> optSample = sampleRepository.findById(id);
-		return optSample;
-	}
+    @Override
+    @PreAuthorize("hasAuthority('SAMPLE_READ') or hasRole('ADMIN')")
+    public Optional<Sample> findById(Integer id) {
+        Optional<Sample> optSample = sampleRepository.findById(id);
+        return optSample;
+    }
 
-	@Override
-	@PreAuthorize("hasAuthority('SAMPLE_READ') or hasAnyRole('ADMIN')")
-	public Page<Sample> findAll(Pageable pageable) {
-		return sampleRepository.findAll(pageable);
-	}
+    @Override
+    @PreAuthorize("hasAuthority('SAMPLE_READ') or hasAnyRole('ADMIN')")
+    public Page<Sample> findAll(Pageable pageable) {
+        return sampleRepository.findAll(pageable);
+    }
 
-	@Override
-	@PreAuthorize("hasAuthority('SAMPLE_EDIT') or hasAnyRole('ADMIN')")
-	public void delete(Sample sample) {
-		sampleRepository.delete(sample);
-	}
+    @Override
+    @PreAuthorize("hasAuthority('SAMPLE_EDIT') or hasAnyRole('ADMIN')")
+    public void delete(Sample sample) {
+        sampleRepository.delete(sample);
+    }
 
-	@Override
-	@PreAuthorize("hasAuthority('SAMPLE_READ') or hasAnyRole('ADMIN')")
-	public Page<Sample> findByString(String value, Pageable pageable) {
-		return null;
-	}
+    @Override
+    @PreAuthorize("hasAuthority('SAMPLE_READ') or hasAnyRole('ADMIN')")
+    public Page<Sample> findByString(String value, Pageable pageable) {
+        return sampleRepository.findByCodeContainsIgnoreCase(value, pageable);
+    }
 
-	@Override
-	public Sample findBySamplename(String samplename) {
-		return null;
-	}
+    @Override
+    public Sample findBySamplename(String samplename) {
+        return null;
+    }
 }
