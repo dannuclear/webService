@@ -1,8 +1,15 @@
 package ru.mephi3.domain;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.*;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import java.sql.Blob;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -11,6 +18,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "REPORT")
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class Report {
 
     @Id
@@ -19,8 +27,14 @@ public class Report {
     private Integer id;
     @Column(name = "NAME")
     private String name;
-    @Column(name = "data")
-    private byte[] data;
-    @Column(name = "source")
-    private byte[] source;
+    @Column(name = "file_name")
+    private String fileName;
+    @Type(type = "jsonb")
+    @Column(name = "parameters")
+    private Map<String, Object> params;
+
+    @Transient
+    private boolean existsSource;
+    @Transient
+    private boolean existsCompiled;
 }

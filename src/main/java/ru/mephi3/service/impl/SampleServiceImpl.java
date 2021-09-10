@@ -56,9 +56,4 @@ public class SampleServiceImpl implements SampleService {
     public Page<Sample> findByString(String value, Pageable pageable) {
         return sampleRepository.findByCodeContainsIgnoreCase(value, pageable);
     }
-
-    @Override
-    public Sample findBySamplename(String samplename) {
-        return null;
-    }
 }

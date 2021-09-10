@@ -11,67 +11,37 @@
         <div class="col-sm-7 d-flex">
             <div class="card col-sm-12">
                 <div class="card-body">
-                    <form th:object="${report}" th:action="${report.id != null}?@{/private/reports/{reportId}(reportId=${report.id})}:@{/private/reports/new}" method="POST">
+                    <form id="report-edit-form" th:object="${report}" th:action="${report.id != null}?@{/private/reports/{reportId}(reportId=${report.id})}:@{/private/reports/new}" method="POST">
                         <input type="hidden" th:field="*{id}">
 
-                        <div class="flex-shrink-0 form-group">
-                            <div class="input-group input-group-sm" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
-                                <div class="input-group-prepend">
-                                    <span id="report-code" class="input-group-text" th:text="#{report.name.label}" style="width: 15rem;">Имя</span>
-                                </div>
-                                <input type="text" class="form-control col-sm-4" th:field="*{name}" aria-describedby="report-code" th:errorclass="is-invalid" th:placeholder="#{report.name.placeholder}" autocomplete="off" th:disabled="${readOnly}">
-                            </div>
-                            <div class="invalid-feedback" th:each="error: ${#fields.errors('name')}" th:text="${error}"></div>
+                        <div th:replace="fragments/fragments :: textfield(labelText=#{report.name.label}, fieldName='name', inputClass='col-sm-4')"></div>
+
+                        <div th:replace="fragments/fragments :: fileSelect(labelText=#{report.data.label}, fieldName='data', fileNameField='fileName')"></div>
+
+                        <div id="report-properties">
+
                         </div>
 
-                        <!--                        <div class="input-group input-group-sm form-group">-->
-                        <!--                            <div class="input-group-prepend">-->
-                        <!--                                <span class="input-group-text" id="report-name" th:text="#{report.name.label}" style="width: 15rem;">Наименование</span>-->
-                        <!--                            </div>-->
-                        <!--                            <input type="text" class="form-control" th:field="*{name}" aria-describedby="report-name" th:classappend="${#fields.hasErrors('name')} ? is-invalid" th:placeholder="#{report.name.placeholder}" autocomplete="off">-->
-                        <!--                            <div class="invalid-feedback" th:each="error: ${#fields.errors('name')}" th:text="${error}"></div>-->
-                        <!--                        </div>-->
-
-                        <!--                        <div class="input-group input-group-sm form-group">-->
-                        <!--                            <div class="input-group-prepend">-->
-                        <!--                                <span class="input-group-text" id="report-selectionDateTime" th:field="*{selectionDateTime}" th:text="#{report.selectionDateTime.label}" style="width: 15rem;">Дата/время отбора</span>-->
-                        <!--                            </div>-->
-                        <!--                            <input data-inputmask-alias="datetime" data-inputmask-inputformat="dd.mm.yyyy HH:MM:ss" data-inputmask-placeholder="__.__.____ __:__:__" type="text" class="form-control col-lg-2" id="datepicker" th:field="*{selectionDateTime}" aria-describedby="report-selectionDateTime" th:classappend="${#fields.hasErrors('selectionDateTime')} ? is-invalid" th:placeholder="#{report.selectionDateTime.placeholder}" autocomplete="off">-->
-                        <!--                            <div class="invalid-feedback" th:each="error: ${#fields.errors('selectionDateTime')}" th:text="${error}"></div>-->
-                        <!--                        </div>-->
-                    </form>
-
-                    <form th:object="${report}" th:action="@{/careData/upload}" method="POST" enctype="multipart/form-data">
-                        <div class="flex-shrink-0 form-group">
-                            <!--                        <div class="row">-->
-
-                            <div class="input-group input-group-sm" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
-                                <div class="input-group-prepend">
-                                    <input type="file" name="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
-                                </div>
-                                <!--                                    <div class="input-group">-->
-
-                                <button class="btn btn-outline-secondary" type="submit" id="inputGroupFileAddon04">Button</button>
-                                <!--                                    </div>-->
-                            </div>
-
-                            <!--                        </div>-->
+                        <div>
+                            <ul>
+                                <li th:each="err : ${#fields.errors('*')}" th:text="${err}" class="error"/>
+                            </ul>
                         </div>
                     </form>
 
                     <div class="d-flex justify-content-end">
-                        <a th:href="@{/private/reports}" class="btn btn-secondary mr-1 button-sm" data-dismiss="modal">Отмена</a>
-                        <button type="submit" class="btn btn-primary button-sm" th:text="#{button.submit.label}">Save changes</button>
+                        <a th:href="@{/private/reports}" form="report-edit-form" class="btn btn-secondary mr-1 button-sm" data-dismiss="modal">Отмена</a>
+                        <button type="submit" form="report-edit-form" class="btn btn-primary button-sm" th:text="#{button.submit.label}">Save changes</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-        // 			$(function() {
-        // 				$("#datepicker1").datepicker();
-        // 			});
+    <script type="text/javascript">
+        $('#report-properties').load('/webService/private/reports/report-properties');
     </script>
+<!--    <script class="default" th:src="@{https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js}" type="text/javascript"></script>-->
+    <script class="default" th:src="@{/js/reports.js}" type="text/javascript"></script>
 </div>
 </body>
 </html>

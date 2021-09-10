@@ -11,8 +11,6 @@ public interface SampleService {
 
 	Sample create(String code);
 
-	Sample findBySamplename(String samplename);
-
 	Sample save(Sample sample);
 
 	Optional<Sample> findById(Integer id);

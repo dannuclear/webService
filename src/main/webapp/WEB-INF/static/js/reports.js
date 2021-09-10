@@ -73,6 +73,41 @@ $(document)
                                 data: 'name',
                                 className: 'h5'
                             },
+                            {
+                                title: 'Файл',
+                                data: 'fileName',
+                                className: 'h5',
+                                width: '20rem'
+                            },
+                            {
+                                title: "",
+                                data: null,
+                                width: "4px",
+                                className: "dt-center align-middle",
+                                render: function (data, type, row, meta) {
+                                    return '<a target="_blank" href="/webService/private/reports/' + data.id + '/show" class="text-danger bi bi-eye h4"></a>'
+                                },
+                                orderable: false
+                            },
+                            {
+                                title: 'ИСХ',
+                                data: null,
+                                className: 'h5',
+                                width: '5rem',
+                                render: function (data, type, row) {
+                                    return '<span class="bi ' + (data.existsSource ? 'bi-check-circle text-success' : 'bi-x-circle text-danger') + ' h4"></span>' +
+                                        (data.existsSource ? '<a href="/webService/private/reports/' + data.id + '/source" class="text-info bi bi-cloud-download h4 ml-3"></a>' : '')
+                                }
+                            },
+                            {
+                                title: 'КОМП',
+                                data: null,
+                                className: 'h5',
+                                width: '5rem',
+                                render: function (data, type, row) {
+                                    return '<span class="bi ' + (data.existsSource ? 'bi-check-circle text-success' : 'bi-x-circle text-danger') + ' h4"></span>'
+                                }
+                            },
                             editButton,
                             deleteButton
                         ],
@@ -86,4 +121,25 @@ $(document)
                             }
                         ]
                     });
+
+            $('.custom-file-input').on('change', function (e) {
+                e.target.nextElementSibling.innerText = this.files[0].name;
+                const data = new FormData();
+                let file = e.target.files[0];
+                data.append('data-source', file);
+
+                $.post({
+                    url: '/webService/private/reports/upload-source',
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                    dataType: 'json'
+                }).done(function (data) {
+                    const alert = $(e.target).parent().parent().siblings('.alert')[0];
+                    alert.innerText = data.message;
+                    $(alert).show().delay(5000).fadeOut();
+                    $('#report-properties').load('/webService/private/reports/report-properties');
+                })
+            });
         });

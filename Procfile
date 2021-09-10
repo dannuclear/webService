@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -cp target/classes:target/dependency/* ru.mephi3.main.App
+web: java $JAVA_OPTS -jar target/webService-0.0.1-SNAPSHOT.war

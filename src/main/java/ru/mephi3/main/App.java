@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,6 +22,7 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 		"ru.mephi3.web.security.config" })
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 //@EnableHypermediaSupport(type = HypermediaType.HAL_FORMS)
+@ConfigurationPropertiesScan
 public class App extends SpringBootServletInitializer // AbstractReactiveWebInitializer //
 {
 	

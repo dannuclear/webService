@@ -2,9 +2,16 @@ package ru.mephi3.mvc.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.HtmlExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,19 +22,30 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import ru.mephi3.domain.Report;
+import ru.mephi3.dto.ReportCompileStatusDTO;
 import ru.mephi3.dto.ReportDTO;
+import ru.mephi3.report.Format;
 import ru.mephi3.service.ReportService;
+import ru.mephi3.service.exception.ReportCompileException;
+import ru.mephi3.service.exception.ReportFillException;
+import ru.mephi3.service.exception.ReportIOException;
 import ru.mephi3.service.exception.ReportNotFoundException;
 import ru.mephi3.web.method.support.DataTablesRequest;
 import ru.mephi3.web.method.support.DataTablesResponse;
 
 import javax.validation.Valid;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Principal;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/private/reports")
 @RequiredArgsConstructor
-@SessionAttributes({"report"})
+@SessionAttributes({"report", "parameters"})
 @Log4j2
 public class ReportController {
     public static final String EDIT_VIEW_NAME = "/private/report/edit";
@@ -40,6 +58,10 @@ public class ReportController {
     public ResponseEntity<DataTablesResponse<Report>> findPageable(@RequestBody DataTablesRequest dataTablesRequest, SessionStatus sessionStatus) {
         sessionStatus.setComplete();
         Page<Report> reportPage = reportService.findByString(dataTablesRequest.getSearch().getValue(), dataTablesRequest.getPageRequest());
+        reportPage.getContent().stream().filter(r -> r.getFileName() != null && r.getFileName().length() != 0).forEach(r -> {
+            r.setExistsCompiled(reportService.existsCompiled(r.getFileName()));
+            r.setExistsSource(reportService.existsSource(r.getFileName()));
+        });
         return ResponseEntity.ok(DataTablesResponse.of(dataTablesRequest.getDraw(), reportPage));
     }
 
@@ -55,10 +77,17 @@ public class ReportController {
         if (!model.containsAttribute("report")) {
             ReportDTO report = null;
             if (id != null) {
-                report = reportService.findById(id).map(eq -> {
-                    ReportDTO reportDTO = ReportDTO.fromDomain(eq);
-                    return reportDTO;
-                }).orElseThrow(() -> new ReportNotFoundException(id));
+                Report dbReport = reportService.findById(id).orElseThrow(() -> new ReportNotFoundException(id));
+                report = ReportDTO.fromDomain(dbReport);
+                if (report.getFileName() != null) {
+                    try {
+                        JasperReport jr = reportService.getJasperReport(report.getFileName());
+                        if (jr != null)
+                            report.fillParameters(jr);
+                    } catch (ReportIOException e) {
+
+                    }
+                }
             } else
                 report = ReportDTO.createDefault();
             model.addAttribute("report", report);
@@ -75,31 +104,102 @@ public class ReportController {
         }).orElseThrow(() -> new ReportNotFoundException(reportId));
 
         mv.setStatus(HttpStatus.NO_CONTENT);
-        mv.setViewName("redirect:" + ALL_VIEW_NAME);
+        mv.setViewName(REDIRECT_ALL_URL);
         return mv;
     }
 
     @PostMapping({"{reportId}", "new"})
-    public String save(@PathVariable(required = false) Integer reportId, @ModelAttribute("report") @Valid ReportDTO reportDTO, BindingResult bindingResult, SessionStatus sessionStatus) {
+    public String save(@PathVariable(required = false) Integer reportId, @ModelAttribute("report") @Valid ReportDTO reportDTO, BindingResult bindingResult, SessionStatus sessionStatus) throws Exception {
         if (bindingResult.hasErrors()) {
             return EDIT_VIEW_NAME;
         }
+        Report reportToSave = null;
         if (reportId != null) {
-            reportService.findById(reportId).map(report -> {
-                Report reportToSave = reportDTO.toDomain();
-                reportToSave.setId(report.getId());
-                return reportService.save(reportToSave);
-            }).orElseThrow(() -> new ReportNotFoundException(reportId));
+            Report report = reportService.findById(reportId).orElseThrow(() -> new ReportNotFoundException(reportId));
+            reportToSave = reportDTO.toDomain();
+            reportToSave.setId(report.getId());
+
         } else {
-            reportService.save(reportDTO.toDomain());
+            reportToSave = reportDTO.toDomain();
         }
+
+        if (reportDTO.getSourceTempFile() != null) {
+            Path path = Paths.get(reportDTO.getSourceTempFile());
+            reportService.saveSourceAndCompile(Files.newInputStream(path), reportDTO.getFileName());
+            Files.deleteIfExists(path);
+        }
+        reportService.save(reportToSave);
+
         sessionStatus.setComplete();
         return REDIRECT_ALL_URL;
     }
 
-    @PostMapping("uploadData")
-    public String uploadData (@RequestParam("file") MultipartFile file, Model model){
+    @GetMapping("{reportId}/source")
+    public ResponseEntity<Resource> getSource(@PathVariable("reportId") Integer reportId) {
+        Report report = reportService.findById(reportId).orElseThrow(() -> new ReportNotFoundException(reportId));
+        Resource resource = reportService.getSourceResource(report.getFileName());
+        MediaType mediaType = MediaTypeFactory.getMediaType(resource).orElse(MediaType.APPLICATION_OCTET_STREAM);
 
-        return "redirect: #";
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(mediaType);
+        ContentDisposition contentDisposition = ContentDisposition.attachment().filename(report.getFileName()).build();
+        httpHeaders.setContentDisposition(contentDisposition);
+        return new ResponseEntity<>(resource, httpHeaders, HttpStatus.OK);
+    }
+
+    @GetMapping({"{reportId}/show"})
+    public ResponseEntity<Resource> showReport(@PathVariable Integer reportId, @RequestParam Map<String, Object> extraParams, @RequestParam(defaultValue = "HTML") Format format) throws ReportFillException {
+        Report report = reportService.findById(reportId).orElseThrow(() -> new ReportNotFoundException(reportId));
+        JasperPrint jp = reportService.fillReport(report, extraParams);
+
+        log.info("Формирование HTML отчета: {} с параметрами {}", report.getName(), extraParams);
+
+        HtmlExporter exporter = new HtmlExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jp));
+
+        ByteArrayResource resource = null;
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+            exporter.setExporterOutput(new SimpleHtmlExporterOutput(os));
+            exporter.exportReport();
+            resource = new ByteArrayResource(os.toByteArray());
+        } catch (JRException | IOException e) {
+            throw new ReportFillException("Не удалось сформировать отчет", e);
+        }
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.TEXT_HTML);
+        ContentDisposition contentDisposition = ContentDisposition.inline().filename(report.getFileName()).build();
+        httpHeaders.setContentDisposition(contentDisposition);
+        return new ResponseEntity<>(resource, httpHeaders, HttpStatus.OK);
+    }
+
+    @PostMapping("upload-source")
+    public ResponseEntity<ReportCompileStatusDTO> uploadSource(@RequestParam("data-source") MultipartFile multipartFile, @ModelAttribute("report") ReportDTO reportDTO) {
+
+        if (multipartFile == null || multipartFile.isEmpty())
+            return ResponseEntity.ok(ReportCompileStatusDTO.builder().message("Файл не выбран").build());
+        Path sourceTemp = null;
+        try {
+            sourceTemp = Files.createTempFile(null, null);
+            multipartFile.transferTo(sourceTemp);
+            JasperReport jr = reportService.compile(multipartFile.getInputStream());
+            reportDTO.fillParameters(jr);
+            reportDTO.setSourceTempFile(sourceTemp.toString());
+            reportDTO.setFileName(multipartFile.getOriginalFilename());
+        } catch (ReportCompileException | IOException e) {
+            try {
+                Files.deleteIfExists(sourceTemp);
+            } catch (IOException ioException) {
+                return ResponseEntity.ok(ReportCompileStatusDTO.builder().message(ioException.getMessage()).build());
+            }
+            return ResponseEntity.ok(ReportCompileStatusDTO.builder().message(e.getMessage()).build());
+        }
+
+        return ResponseEntity.ok(ReportCompileStatusDTO.builder().message("Отчет собран").build());
+    }
+
+    @GetMapping("report-properties")
+    public String getParameters(Model model) {
+        return "fragments/fragments :: reportProperties";
     }
 }

@@ -24,19 +24,19 @@
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle bi bi-journals" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;Журналы</a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-						<a class="dropdown-item bi bi-eyedropper" th:href="@{/private/samples}" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('SAMPLE_READ', 'SAMPLE_EDIT')">&nbsp;Регистрация проб</a>
-						<a class="dropdown-item" href="#" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('SELECTION_READ', 'SELECTION_EDIT')">&nbsp;Журнал отбора</a>
-						<a class="dropdown-item" href="#" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('RESEARCH_READ', 'RESEARCH_EDIT')">&nbsp;Журнал протоколов исследований</a>
+						<a class="dropdown-item bi bi-droplet-half" th:href="@{/private/samples}" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('SAMPLE_READ', 'SAMPLE_EDIT')">&nbsp;Регистрация проб</a>
+						<a class="dropdown-item bi bi-clipboard" th:href="@{/private/samplings}" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('SELECTION_READ', 'SELECTION_EDIT')">&nbsp;Акты отбора/приема</a>
+						<a class="dropdown-item bi bi-eyedropper" href="#" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('RESEARCH_READ', 'RESEARCH_EDIT')">&nbsp;Протоколы испытаний</a>
 						<div class="dropdown-divider"></div>
-						<a class="dropdown-item" href="#">&nbsp;Журнал заявок</a>
+						<a class="dropdown-item bi bi-inboxes" href="#">&nbsp;Заявки</a>
 					</div>
 				</li>
-				<li class="nav-item dropdown" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('DECLARANT_READ', 'DECLARANT_EDIT')">
+				<li class="nav-item dropdown" sec:authorize="hasAnyRole('ADMIN', 'USER')">
 					<a class="nav-link dropdown-toggle bi bi-stack" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;Справочники</a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-						<a class="dropdown-item bi bi-book" th:href="@{/private/documents}">&nbsp;Документы</a>
-						<a class="dropdown-item bi bi-book-half" th:href="@{/private/documentTypes}">&nbsp;Типы документов</a>
-						<a class="dropdown-item bi bi-book-half" th:href="@{/private/report/all}">&nbsp;Отчеты</a>
+						<a class="dropdown-item bi bi-journal-bookmark-fill" th:href="@{/private/documents}" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('DOCUMENT_READ', 'DOCUMENT_EDIT')">&nbsp;Нормативная база</a>
+						<a class="dropdown-item bi bi-journal-medical" th:href="@{/private/documentTypes}" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('DOCUMENT_TYPE_READ', 'DOCUMENT_TYPE_EDIT')">&nbsp;Типы документов</a>
+						<a class="dropdown-item bi bi-receipt-cutoff" th:href="@{/private/reports}" sec:authorize="hasAnyRole('ADMIN') or hasAnyAuthority('REPORT_READ', 'REPORT_EDIT')">&nbsp;Отчеты</a>
 						<a class="dropdown-item bi bi-house-door" href="#">&nbsp;Заказчики</a>
 					</div>
 				</li>

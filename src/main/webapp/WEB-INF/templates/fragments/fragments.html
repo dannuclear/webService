@@ -127,5 +127,132 @@
 <div th:fragment="success">
     <h2>Успешно</h2>
 </div>
+
+<div th:fragment="textfield(labelText, fieldName)"
+     th:with="inputType=${inputType?:'text'}, placeholder=${placeholder?:labelText}, readOnly=${readOnly?:false}, cssClass=${cssClass?:''}, inputClass=${inputClass?:''}, labelStyle=${labelStyle?:'width: 15rem;'}"
+     th:classappend="${cssClass}"
+     class="flex-shrink-0 form-group">
+
+    <div class="input-group input-group-sm"
+         th:classappend="${#fields.hasErrors('__${fieldName}__')} ? 'is-invalid'">
+        <div class="input-group-prepend">
+            <span th:id="${fieldName}+'_label'"
+                  th:text="${labelText}"
+                  class="input-group-text"
+                  th:style="${labelStyle}">Поле ввода</span>
+        </div>
+        <input th:id="${fieldName}+'_input'"
+               th:type="${inputType}"
+               th:field="*{__${fieldName}__}"
+               th:aria-describedby="${fieldName}+'_label'"
+               th:errorclass="is-invalid"
+               th:placeholder="${placeholder}"
+               th:disabled="${readOnly}"
+               th:classappend="${inputClass}"
+               class="form-control "
+               autocomplete="off">
+    </div>
+    <div th:each="error: ${#fields.errors('__${fieldName}__')}"
+         th:text="${error}"
+         class="invalid-feedback"></div>
+</div>
+
+<div th:fragment="dateTimeField(labelText, fieldName)"
+     th:with="inputType=${inputType?:'text'}, placeholder=${placeholder?:labelText}, readOnly=${readOnly?:false}, cssClass=${cssClass?:''}, inputClass=${inputClass?:''}, labelStyle=${labelStyle?:'width: 15rem;'}, inputformat=${inputformat?:'dd.mm.yyyy HH:MM:ss'}"
+     th:classappend="${cssClass}"
+     class="flex-shrink-0 form-group">
+
+    <div class="input-group input-group-sm"
+         th:classappend="${#fields.hasErrors('__${fieldName}__')} ? 'is-invalid'">
+        <div class="input-group-prepend">
+            <span th:id="${fieldName}+'_label'"
+                  th:text="${labelText}"
+                  class="input-group-text"
+                  th:style="${labelStyle}">Поле ввода</span>
+        </div>
+        <input data-inputmask-alias="datetime"
+               th:data-inputmask-inputformat="${inputformat}"
+               data-inputmask-placeholder="_"
+               th:type="${inputType}"
+               th:id="${fieldName}+'_input'"
+               th:field="*{__${fieldName}__}"
+               th:aria-describedby="${fieldName}+'_label'"
+               th:classappend="${inputClass}"
+               th:errorclass="is-invalid"
+               th:placeholder="${placeholder}"
+               class="form-control"
+               autocomplete="off">
+
+    </div>
+    <div th:each="error: ${#fields.errors('__${fieldName}__')}"
+         th:text="${error}"
+         class="invalid-feedback"></div>
+</div>
+
+<div th:fragment="fileSelect(labelText, fieldName, fileNameField)"
+     th:with="inputType=${inputType?:'file'}, placeholder=${placeholder?:labelText}, readOnly=${readOnly?:false}, cssClass=${cssClass?:''}, inputClass=${inputClass?:''}"
+     th:classappend="${cssClass}"
+     class="flex-shrink-0 form-group">
+
+    <div class="input-group input-group-sm mb-3"
+         th:classappend="${#fields.hasErrors('__${fieldName}__')} ? 'is-invalid'">
+        <div class="input-group-prepend">
+            <span th:id="${fieldName}+'-upload'"
+                  th:text="${labelText}"
+                  class="input-group-text"
+                  style="width: 15rem;">Поле ввода</span>
+        </div>
+
+        <div class="custom-file form-control-sm">
+            <input th:id="${fieldName}+'-file'"
+                   th:type="${inputType}"
+
+                   th:aria-describedby="${fieldName}+'-upload'"
+
+                   th:disabled="${readOnly}"
+                   th:classappend="${inputClass}"
+                   class="custom-file-input"
+                   autocomplete="off">
+            <label class="custom-file-label"
+                   th:for="${fieldName}+'-file'"
+                   th:text="*{#strings.isEmpty(__${fileNameField}__)}?'Выберите файл исходника *.jrxml':'Файл загружен: ' + *{__${fileNameField}__}"
+                   th:classappend="text-success"></label>
+        </div>
+    </div>
+
+    <div th:each="error: ${#fields.errors('__${fieldName}__')}"
+         th:text="${error}"
+         class="invalid-feedback">default
+    </div>
+    <div class="alert alert-success" role="alert" style="display: none">
+        This is a success alert—check it out!
+    </div>
+</div>
+
+<table class="table table-hover table-bordered table-xsm" th:fragment="reportProperties" th:object="${report}">
+    <thead>
+    <tr>
+        <th class="w-30">Параметр</th>
+        <th class="w-70">Значение</th>
+    </tr>
+    </thead>
+    <tbody th:each="p, stat: *{params}">
+    <tr>
+        <td th:text="${p.name}" class="p-1">Параметр отчета</td>
+        <td class="input-group-sm">
+            <input type="text" th:field="*{params[__${stat.index}__].string}" class="w-100 form-control" th:if="${#lists.contains({'java.lang.String'}, p.className)}">
+            <input type="number" th:field="*{params[__${stat.index}__].integer}" class="w-100 form-control" th:if="${#lists.contains({'java.lang.Integer'}, p.className)}">
+            <input type="number" th:field="*{params[__${stat.index}__].double}" class="w-100 form-control" th:if="${#lists.contains({'java.lang.Float', 'java.lang.Double'}, p.className)}">
+
+            <div class="custom-control custom-switch py-1" th:if="${#lists.contains({'java.lang.Boolean'}, p.className)}">
+                <input th:id="check_ + ${stat.index}" type="checkbox" th:field="*{params[__${stat.index}__].boolean}" class="custom-control-input">
+                <label class="custom-control-label" th:for="check_ + ${stat.index}">
+                </label>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
 </body>
 </html>

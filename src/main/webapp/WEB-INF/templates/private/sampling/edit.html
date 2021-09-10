@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorate="~{layout.html}">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Insert title here</title>
+
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-lg-12 col-xl-6 d-flex">
+            <div class="card col-sm-12">
+                <div class="card-body">
+                    <form th:object="${sampling}" th:action="${sampling.id != null}?@{/private/samplings/{samplingId}(samplingId=${sampling.id})}:@{/private/samplings/new}" method="POST">
+                        <input type="hidden" th:field="*{id}">
+
+                        <div class="d-flex flex-row mb-2">
+                            <div th:replace="fragments/fragments :: textfield(labelText=#{sampling.number.label}, fieldName='number', labelStyle='width:6rem;')"></div>
+                            <div th:replace="fragments/fragments :: dateTimeField(labelText=#{sampling.createDate.label}, fieldName='createDate', inputformat='dd.mm.yyyy', labelStyle='width:7rem;', cssClass='pl-2')"></div>
+                        </div>
+                        <div th:replace="fragments/fragments :: textfield(labelText=#{sampling.base.label}, fieldName='base', labelStyle='width:6rem;')"></div>
+
+                        <div class="d-flex justify-content-end">
+<!--                            <a th:href="@{/private/samplings}" onclick="history.back();" class="btn btn-secondary mr-1 button-sm" data-dismiss="modal">Отмена</a>-->
+                            <a onclick="history.back();" class="btn btn-secondary mr-1 button-sm" data-dismiss="modal">Отмена</a>
+                            <button type="submit" class="btn btn-primary button-sm" th:text="#{button.submit.label}">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12 col-xl-6 d-flex">
+            <div class="card col-sm-12">
+                <div class="card-body">
+                    <table class="table table-hover table-bordered table-xsm">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th class="text-center"></th>
+                            <!--                            <th class="text-center w-15">Дата отбора</th>-->
+                            <!--                            <th class="text-center w-10">Номер</th>-->
+                            <!--                            <th></th>-->
+                            <!--                            <th style="width: 4px"></th>-->
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="sVar, stat : ${sampling.samples}">
+                            <td>
+                                <div class="p-0">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <span>
+                                            <span class="font-weight-bold" >Код: </span>
+                                            <span th:text="${sVar.sample.code}">Код образца</span>
+                                        </span>
+                                        <div>
+                                            <small class="font-weight-bold">Дата и время отбора:</small>
+                                            <small th:text="${{sVar.sample.selectionDateTime}}">Дата и время отбора</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <p class="mb-1" th:text="${sVar.sample.name}">Наименование</p>
+                                        <div>
+                                            <a th:href="@{/private/samples/{sampleId}(sampleId=${sVar.sample.id})}" class="btn btn-default p-0">
+                                                <span class="text-info bi bi-pencil h5" aria-hidden="true"></span>
+                                            </a>
+                                            <form method="POST" th:action="@{#}" class="d-inline">
+                                                <button type="submit" th:value="${stat.index}" class="btn btn-default p-0">
+                                                    <span class="text-danger bi bi-trash h5" aria-hidden="true"></span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <!--                            <td th:text="${stat.count}" class="text-center"></td>-->
+                            <!--                            <td th:text="${{sVar.sample.selectionDateTime}}" class="text-center"></td>-->
+                            <!--                            <td th:text="${sVar.sample.code}"></td>-->
+                            <!--                            <td></td>-->
+
+                            <!--                            <td class="dt-center editor-delete align-middle">-->
+                            <!--                                <form method="POST" th:action="@{#}">-->
+                            <!--                                    <button type="submit" name="deleteVerificationIdx" th:value="${stat.index}" class="btn btn-default p-0">-->
+                            <!--                                        <span class="text-danger bi bi-trash h5" aria-hidden="true"></span>-->
+                            <!--                                    </button>-->
+                            <!--                                </form>-->
+                            <!--                            </td>-->
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 			$(function() {
+        // 				$("#datepicker1").datepicker();
+        // 			});
+    </script>
+</div>
+</body>
+</html>
